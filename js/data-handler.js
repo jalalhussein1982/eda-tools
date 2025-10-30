@@ -95,20 +95,30 @@ class DataHandler {
     async preprocessData() {
         const missingStrategy = stateManager.get('missingDataStrategy');
         const outlierDecisions = stateManager.get('outlierDecisions');
-        
-        setPythonVariable('missing_strategy', JSON.stringify(missingStrategy));
-        setPythonVariable('outlier_decisions', JSON.stringify(outlierDecisions));
-        
+        const selectedColumns = [...stateManager.get('selectedIVs'), ...stateManager.get('selectedDVs')];
+
+        setPythonVariable('missing_strategy_json', JSON.stringify(missingStrategy));
+        setPythonVariable('outlier_decisions_json', JSON.stringify(outlierDecisions));
+        setPythonVariable('selected_columns_json', JSON.stringify(selectedColumns));
+
         await runPython(`
+import json
 from preprocessing import preprocess_data
+selected_columns = json.loads(selected_columns_json)
+missing_strategy = json.loads(missing_strategy_json)
+outlier_decisions = json.loads(outlier_decisions_json)
 df_clean = preprocess_data(df, selected_columns, missing_strategy, outlier_decisions)
         `);
     }
     
     async analyzeDistributions() {
+        const selectedColumns = [...stateManager.get('selectedIVs'), ...stateManager.get('selectedDVs')];
+        setPythonVariable('selected_columns_json', JSON.stringify(selectedColumns));
+
         const result = await runPython(`
 import json
 from distribution import analyze_distributions
+selected_columns = json.loads(selected_columns_json)
 dist_results = analyze_distributions(df_clean, selected_columns)
 json.dumps(dist_results)
         `);
@@ -117,11 +127,16 @@ json.dumps(dist_results)
     
     async calculateCorrelations() {
         const config = stateManager.get('config');
-        setPythonVariable('config', JSON.stringify(config));
-        
+        const selectedColumns = [...stateManager.get('selectedIVs'), ...stateManager.get('selectedDVs')];
+
+        setPythonVariable('config_json', JSON.stringify(config));
+        setPythonVariable('selected_columns_json', JSON.stringify(selectedColumns));
+
         const result = await runPython(`
 import json
 from correlation import calculate_all_correlations
+selected_columns = json.loads(selected_columns_json)
+config = json.loads(config_json)
 corr_results = calculate_all_correlations(df_clean, selected_columns, config)
 json.dumps(corr_results)
         `);
@@ -131,13 +146,18 @@ json.dumps(corr_results)
     async fitRegressionModels() {
         const ivs = stateManager.get('selectedIVs');
         const dvs = stateManager.get('selectedDVs');
-        
-        setPythonVariable('ivs', ivs);
-        setPythonVariable('dvs', dvs);
-        
+        const config = stateManager.get('config');
+
+        setPythonVariable('ivs_json', JSON.stringify(ivs));
+        setPythonVariable('dvs_json', JSON.stringify(dvs));
+        setPythonVariable('config_json', JSON.stringify(config));
+
         const result = await runPython(`
 import json
 from modeling import fit_all_models
+ivs = json.loads(ivs_json)
+dvs = json.loads(dvs_json)
+config = json.loads(config_json)
 regression_results = fit_all_models(df_clean, ivs, dvs, config)
 json.dumps(regression_results)
         `);
@@ -145,9 +165,17 @@ json.dumps(regression_results)
     }
     
     async testAssumptions() {
+        const ivs = stateManager.get('selectedIVs');
+        const dvs = stateManager.get('selectedDVs');
+
+        setPythonVariable('ivs_json', JSON.stringify(ivs));
+        setPythonVariable('dvs_json', JSON.stringify(dvs));
+
         const result = await runPython(`
 import json
 from assumptions import test_all_assumptions
+ivs = json.loads(ivs_json)
+dvs = json.loads(dvs_json)
 assumption_results = test_all_assumptions(df_clean, ivs, dvs)
 json.dumps(assumption_results)
         `);
@@ -159,11 +187,16 @@ json.dumps(assumption_results)
     }
     
     async generateReport(results) {
-        setPythonVariable('all_results', JSON.stringify(results));
-        
+        const config = stateManager.get('config');
+
+        setPythonVariable('all_results_json', JSON.stringify(results));
+        setPythonVariable('config_json', JSON.stringify(config));
+
         const report = await runPython(`
 import json
 from report_generator import generate_html_report
+all_results = json.loads(all_results_json)
+config = json.loads(config_json)
 report_html = generate_html_report(all_results, config, df_clean)
 report_html
         `);

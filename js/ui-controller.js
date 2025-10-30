@@ -493,13 +493,14 @@ class UIController {
         
         try {
             // Call Python to assess data quality
-            setPythonVariable('selected_columns', 
-                [...stateManager.get('selectedIVs'), ...stateManager.get('selectedDVs')]);
-            
+            const selectedColumns = [...stateManager.get('selectedIVs'), ...stateManager.get('selectedDVs')];
+            setPythonVariable('selected_columns_json', JSON.stringify(selectedColumns));
+
             const result = await runPython(`
 import json
 from preprocessing import assess_data_quality
 
+selected_columns = json.loads(selected_columns_json)
 quality_report = assess_data_quality(df, selected_columns)
 json.dumps(quality_report)
             `);
@@ -630,12 +631,16 @@ json.dumps(quality_report)
     async runDistributionAnalysis() {
         const container = document.getElementById('distribution-results');
         container.innerHTML = '<p>Analyzing distributions...</p>';
-        
+
         try {
+            const selectedColumns = [...stateManager.get('selectedIVs'), ...stateManager.get('selectedDVs')];
+            setPythonVariable('selected_columns_json', JSON.stringify(selectedColumns));
+
             const result = await runPython(`
 import json
 from distribution import analyze_distributions
 
+selected_columns = json.loads(selected_columns_json)
 dist_results = analyze_distributions(df, selected_columns)
 json.dumps(dist_results)
             `);
