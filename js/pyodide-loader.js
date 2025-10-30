@@ -151,34 +151,29 @@ async function initializePyodide() {
  */
 async function loadPythonModules() {
     try {
-        // Load preprocessing module
-        const preprocessingCode = await fetch('python/preprocessing.py').then(r => r.text());
-        await pyodide.runPythonAsync(preprocessingCode);
-        
-        // Load distribution module
-        const distributionCode = await fetch('python/distribution.py').then(r => r.text());
-        await pyodide.runPythonAsync(distributionCode);
-        
-        // Load correlation module
-        const correlationCode = await fetch('python/correlation.py').then(r => r.text());
-        await pyodide.runPythonAsync(correlationCode);
-        
-        // Load modeling module
-        const modelingCode = await fetch('python/modeling.py').then(r => r.text());
-        await pyodide.runPythonAsync(modelingCode);
-        
-        // Load assumptions module
-        const assumptionsCode = await fetch('python/assumptions.py').then(r => r.text());
-        await pyodide.runPythonAsync(assumptionsCode);
-        
-        // Load report generator
-        const reportCode = await fetch('python/report_generator.py').then(r => r.text());
-        await pyodide.runPythonAsync(reportCode);
-        
-        // Load main EDA core
-        const edaCoreCode = await fetch('python/eda_core.py').then(r => r.text());
-        await pyodide.runPythonAsync(edaCoreCode);
-        
+        // List of Python module files to load
+        const moduleFiles = [
+            'preprocessing.py',
+            'distribution.py',
+            'correlation.py',
+            'modeling.py',
+            'assumptions.py',
+            'report_generator.py',
+            'eda_core.py'
+        ];
+
+        // Fetch all module files and write them to Pyodide's virtual file system
+        for (const filename of moduleFiles) {
+            const code = await fetch(`python/${filename}`).then(r => r.text());
+            // Write the file to Pyodide's virtual file system so it can be imported
+            pyodide.FS.writeFile(filename, code);
+        }
+
+        // Now import the main module, which will be able to import the others
+        await pyodide.runPythonAsync(`
+import eda_core
+        `);
+
         return true;
     } catch (error) {
         console.error('Failed to load Python modules:', error);
