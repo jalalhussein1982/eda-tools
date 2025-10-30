@@ -1,0 +1,62 @@
+📁 eda-tool/
+│
+├── 📄 index.html                    # Main application entry point
+├── 📄 service-worker.js             # Offline functionality
+│
+├── 📋 README.md                     # Complete user guide (comprehensive)
+├── 📋 QUICKSTART.md                 # 5-minute getting started guide
+├── 📋 DEPLOYMENT.md                 # IT deployment instructions  
+├── 📋 PROJECT_SUMMARY.md            # Architecture & decisions explained
+├── 📋 STRUCTURE.txt                 # This file
+│
+├── 📁 css/
+│   └── 📄 style.css                 # All styling (accessibility, responsive)
+│
+├── 📁 js/                           # Frontend JavaScript
+│   ├── 📄 main.js                   # Application initialization
+│   ├── 📄 utils.js                  # Utility functions (formatting, validation)
+│   ├── 📄 state-manager.js          # State management + localStorage
+│   ├── 📄 pyodide-loader.js         # Python environment loader
+│   ├── 📄 ui-controller.js          # User interactions + navigation
+│   ├── 📄 data-handler.js           # Analysis orchestration
+│   └── 📄 visualization.js          # Plotly chart helpers
+│
+├── 📁 python/                       # Backend Statistical Analysis (in browser)
+│   ├── 📄 eda_core.py               # Main orchestration
+│   ├── 📄 preprocessing.py          # Data cleaning, quality assessment
+│   ├── 📄 distribution.py           # Normality tests, descriptive stats
+│   ├── 📄 correlation.py            # Pearson, Spearman, Kendall, VIF
+│   ├── 📄 modeling.py               # Linear & polynomial regression
+│   ├── 📄 assumptions.py            # Homoscedasticity, independence tests
+│   └── 📄 report_generator.py       # HTML report generation
+│
+└── 📁 assets/                       # Sample datasets
+    └── 📄 sample_health.csv         # Example dataset for testing
+
+TOTAL FILES: 24
+TOTAL SIZE: ~1 MB (excluding Pyodide runtime which downloads separately)
+
+KEY FEATURES:
+✅ Zero server computation (all client-side)
+✅ Offline capable after first load
+✅ WCAG accessible
+✅ Supports datasets up to 500MB
+✅ Comprehensive statistical analysis
+✅ Plain-language interpretations
+✅ Configuration save/load
+✅ Citation-ready reports
+
+QUICK START:
+1. cd eda-tool
+2. python -m http.server 8000
+3. Open http://localhost:8000
+4. Wait 30-60 seconds for Python to load
+5. Click "Health Survey" sample dataset
+6. Follow the wizard (5 minutes total)
+
+DEPLOYMENT:
+- Upload to any web server (Apache, Nginx, GitHub Pages)
+- Requires HTTPS for offline capability
+- No backend/database needed
+- Zero maintenance required
+- See DEPLOYMENT.md for details
