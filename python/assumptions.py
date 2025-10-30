@@ -30,14 +30,14 @@ def test_all_assumptions(df, ivs, dvs):
         linearity_corr = np.corrcoef(y_pred, residuals)[0, 1]
         dv_assumptions['linearity'] = {
             'correlation': float(linearity_corr),
-            'passed': abs(linearity_corr) < 0.1
+            'passed': bool(abs(linearity_corr) < 0.1)
         }
         
         # 2. Independence (Durbin-Watson)
         dw_stat = durbin_watson(residuals)
         dv_assumptions['independence'] = {
             'durbin_watson': float(dw_stat),
-            'passed': 1.5 < dw_stat < 2.5
+            'passed': bool(1.5 < dw_stat < 2.5)
         }
         
         # 3. Homoscedasticity (Breusch-Pagan)
@@ -47,7 +47,7 @@ def test_all_assumptions(df, ivs, dvs):
             dv_assumptions['homoscedasticity'] = {
                 'breusch_pagan_stat': float(bp_stat),
                 'breusch_pagan_pvalue': float(bp_pvalue),
-                'passed': bp_pvalue > 0.05
+                'passed': bool(bp_pvalue > 0.05)
             }
         except:
             dv_assumptions['homoscedasticity'] = {
@@ -61,14 +61,14 @@ def test_all_assumptions(df, ivs, dvs):
             dv_assumptions['normality_residuals'] = {
                 'shapiro_wilk_stat': float(sw_stat),
                 'shapiro_wilk_pvalue': float(sw_pvalue),
-                'passed': sw_pvalue > 0.05
+                'passed': bool(sw_pvalue > 0.05)
             }
         else:
             # Use Anderson-Darling for large samples
             anderson_result = stats.anderson(residuals)
             dv_assumptions['normality_residuals'] = {
                 'anderson_stat': float(anderson_result.statistic),
-                'passed': anderson_result.statistic < anderson_result.critical_values[2]
+                'passed': bool(anderson_result.statistic < anderson_result.critical_values[2])
             }
         
         results[dv] = dv_assumptions

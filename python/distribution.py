@@ -28,15 +28,15 @@ def analyze_distributions(df, selected_columns):
         kurtosis = float(stats.kurtosis(data))
         
         # Determine if normal (conservative: p > 0.05)
-        is_normal = shapiro_p > 0.05 if shapiro_p is not None else abs(skewness) < 0.5
-        
+        is_normal = bool(shapiro_p > 0.05) if shapiro_p is not None else bool(abs(skewness) < 0.5)
+
         results[col] = {
             'shapiro_stat': float(shapiro_stat) if shapiro_stat is not None else None,
             'shapiro_p': float(shapiro_p) if shapiro_p is not None else None,
             'anderson_stat': float(anderson_result.statistic),
             'skewness': skewness,
             'kurtosis': kurtosis,
-            'is_normal': bool(is_normal),
+            'is_normal': is_normal,
             'mean': float(data.mean()),
             'median': float(data.median()),
             'std': float(data.std()),
