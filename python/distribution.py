@@ -4,6 +4,25 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
+def convert_numpy_types(obj):
+    """
+    Recursively convert numpy types to native Python types for JSON serialization
+    """
+    if isinstance(obj, dict):
+        return {key: convert_numpy_types(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.bool_):
+        return bool(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    else:
+        return obj
+
 def analyze_distributions(df, selected_columns):
     """
     Analyze distribution of each variable
@@ -44,5 +63,5 @@ def analyze_distributions(df, selected_columns):
             'max': float(data.max()),
             'values': data.tolist()[:1000]  # Limit for visualization
         }
-    
-    return results
+
+    return convert_numpy_types(results)

@@ -8,6 +8,25 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, mean_squared_error
 import json
 
+def convert_numpy_types(obj):
+    """
+    Recursively convert numpy types to native Python types for JSON serialization
+    """
+    if isinstance(obj, dict):
+        return {key: convert_numpy_types(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.bool_):
+        return bool(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    else:
+        return obj
+
 def fit_all_models(df, ivs, dvs, config):
     """
     Fit regression models for each DV against all IVs
@@ -38,8 +57,8 @@ def fit_all_models(df, ivs, dvs, config):
             dv_results['polynomial'] = poly_models
         
         results[dv] = dv_results
-    
-    return results
+
+    return convert_numpy_types(results)
 
 def fit_linear_regression(X, y, feature_names, target_name):
     """

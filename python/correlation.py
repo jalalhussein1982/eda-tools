@@ -6,6 +6,25 @@ from scipy import stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import json
 
+def convert_numpy_types(obj):
+    """
+    Recursively convert numpy types to native Python types for JSON serialization
+    """
+    if isinstance(obj, dict):
+        return {key: convert_numpy_types(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.bool_):
+        return bool(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    else:
+        return obj
+
 def calculate_all_correlations(df, selected_columns, config):
     """
     Calculate correlations using multiple methods
@@ -54,8 +73,8 @@ def calculate_all_correlations(df, selected_columns, config):
     if config.get('calculateVIF', True) and len(selected_columns) > 1:
         vif_scores = calculate_vif(df[selected_columns])
         results['vif'] = vif_scores
-    
-    return results
+
+    return convert_numpy_types(results)
 
 def calculate_pvalues(df, method='pearson'):
     """
