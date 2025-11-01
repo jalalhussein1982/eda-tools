@@ -669,6 +669,16 @@ json.dumps(dist_results)
                     <h3>${column}</h3>
                     <div id="hist-${column}" style="width: 100%; height: 300px;"></div>
                     <div style="margin-top: 1rem;">
+                        <p><strong>Descriptive Statistics:</strong></p>
+                        <ul style="margin-left: 1.5rem;">
+                            <li>Mean (Average): ${formatNumber(result.mean)}</li>
+                            <li>Median: ${formatNumber(result.median)}</li>
+                            <li>Standard Deviation: ${formatNumber(result.std)}</li>
+                            <li>Minimum: ${formatNumber(result.min)}</li>
+                            <li>Maximum: ${formatNumber(result.max)}</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 1rem;">
                         <p><strong>Normality Tests:</strong></p>
                         <ul style="margin-left: 1.5rem;">
                             <li>Shapiro-Wilk: ${formatPValue(result.shapiro_p)} ${result.is_normal ? '✓' : '❌'}</li>
